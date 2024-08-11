@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/common/common.dart';
 import '../../home/screens/screens.dart';
 
 class Login extends StatefulWidget {
@@ -40,6 +41,62 @@ class _LoginState extends State<Login> {
         );
       }
     }
+
+    Future<void> resetPassword(String email) async {
+      try {
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset email sent')),
+        );
+      } catch (e) {
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send reset email: $e')),
+        );
+      }
+    }
+
+    void showForgotPasswordDialog() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          final resetEmailController = TextEditingController();
+          return AlertDialog(
+            title: const Text('Forgot Password'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: resetEmailController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your email address',
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  final email = resetEmailController.text.trim();
+                  if (email.isNotEmpty) {
+                    resetPassword(email);
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: const Text(' Reset'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -105,12 +162,12 @@ class _LoginState extends State<Login> {
                 return null;
               },
             ),
-            Padding(
-              padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.45, top: MediaQuery.of(context).size.height * 0.02),
-              child: GestureDetector(
-                onTap: () {
-                  // Implement forgot password functionality
-                },
+            GestureDetector(
+              onTap: () {
+                showForgotPasswordDialog();
+              },
+              child: Padding(
+                padding:  EdgeInsets.only(left: width*.47),
                 child: Text('Forgot Password'),
               ),
             ),

@@ -48,60 +48,6 @@ class AuthScreen extends ConsumerWidget {
       }
     }
 
-    Future<void> resetPassword(String email) async {
-      try {
-        await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password reset email sent')),
-        );
-      } catch (e) {
-        print('Error: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send reset email: $e')),
-        );
-      }
-    }
-
-    void showForgotPasswordDialog() {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          final resetEmailController = TextEditingController();
-          return AlertDialog(
-            title: const Text('Forgot Password'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: resetEmailController,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your email address',
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  final email = resetEmailController.text.trim();
-                  if (email.isNotEmpty) {
-                    resetPassword(email);
-                  }
-                  Navigator.of(context).pop();
-                },
-                child: const Text(' Reset'),
-              ),
-            ],
-          );
-        },
-      );
-    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -209,12 +155,7 @@ class AuthScreen extends ConsumerWidget {
               ),
               SizedBox(height: height * 0.01),
 
-              GestureDetector(
-                onTap: () {
-                  showForgotPasswordDialog();
-                },
-                child: Text('Forgot Password'),
-              ),
+
               SizedBox(height: MediaQuery.of(context).size.height * 0.01),
               Divider(),
               Text('or'),
